@@ -92,13 +92,14 @@ DELIMETER;
 
 echo $product;
 
-$_SESSION['item_total'] = $total += $subtotal;
-$_SESSION['item_quantity'] = $item_quantity;
 $item_name++;
 $item_number++;
 $amount++;
 $quantity++;
 } 
+
+$_SESSION['item_total'] = $total += $subtotal;
+$_SESSION['item_quantity'] = $item_quantity;
 }   
 }
 }
@@ -121,6 +122,60 @@ return $paypal_button;
 
 }
 }
+
+
+
+
+function process_transaction() {
+
+if(isset($_GET['tx'])) {
+
+$amount = $_GET['amt'];
+$currency = $_GET['cc'];
+$transaction = $_GET['tx'];
+$status = $_GET['st'];
+
+$total = 0;
+$item_quantity = 0;
+
+foreach ($_SESSION as $name => $value) {
+if($value > 0 && substr($name, 0, 8) == "product_")  {
+
+$send_order = query("
+INSERT INTO orders(orderAmount, orderTransaction, orderStatus, orderCurrency) 
+VALUES('$amount', '$transaction', '$status', '$currency')");
+confirm($send_order);
+$last_order_id = last_id();
+
+$id = substr($name, 8);
+$query = query("select * from products where productID = " . escape_string($id) . " ");
+confirm($query);
+
+while($row = fetch_array($query)) {
+$subtotal = $row['productPrice'] * $value;
+$item_quantity += $value;
+$productPrice = $row['productPrice'];
+$productName = $row['productName'];
+
+$insert_report = query("INSERT INTO 
+reports(productID, productName, orderID, productPrice, productQuantityInStock) 
+VALUES('$id', '$productName', '$last_order_id', '$productPrice', '$value')");
+confirm($insert_report);
+
+} 
+$total += $subtotal;
+$item_quantity;
+}   
+}
+session_destroy();
+} else {
+    
+redirect("index.php");
+
+}
+
+}
+
 
 
 ?> 

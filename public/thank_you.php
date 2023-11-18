@@ -1,40 +1,13 @@
 <?php require_once("../resources/config.php"); ?>
-<?php require_once("cart.php"); ?>
 <?php include(TEMPLATE_FRONT . DS . "header.php") ?>
 
+<?php process_transaction(); ?>
 
-<?php
+<!-- Page Content -->
+<div class="container">
 
-if(isset($_GET['tx'])) {
+<h1 class="text-center">THANK YOU</h1>
 
-$amount = $_GET['amt'];
-$currency = $_GET['cc'];
-$transaction = $_GET['tx'];
-$status = $_GET['st'];
-
-$query = query("
-INSERT INTO orders(orderAmount, orderTransaction, orderStatus, orderCurrency) 
-VALUES('$amount', '$transaction', '$status', '$currency')");
-
-confirm($query);
-session_destroy();
-
-} else {
-
-
-redirect("index.php");
-
-}
-
-
-?>
-
-    <!-- Page Content -->
-    <div class="container">
-    
-    <h1 class="text-center"><strong>THANK YOU</strong></h1>
-
-    </div>
-    <!-- /.container -->
-
- <?php include(TEMPLATE_FRONT . DS . "footer.php") ?>
+</div>
+<!-- /.container -->
+<?php include(TEMPLATE_FRONT . DS . "footer.php") ?>

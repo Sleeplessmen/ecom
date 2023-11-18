@@ -2,6 +2,16 @@
 
 // helper functions
 
+function last_id() {
+
+global $connection;
+
+return mysqli_insert_id($connection);
+
+}
+
+
+
 function set_message($msg) {
 
 if(!empty($msg)) {
@@ -20,12 +30,9 @@ $msg = "";
 function display_message() {
 
 if(isset($_SESSION['message'])) {
-
     echo $_SESSION['message'];
     unset($_SESSION['message']);
-
 }
-
 }
 
 function redirect($location){
@@ -239,7 +246,28 @@ if(!$result) {
 
 /************************************BACK END FUNCTION***************************/
 
+function display_orders() {
 
+$query = query("select * from orders");
+confirm($query);
 
+while($row = fetch_array($query)) {
+
+$orders = <<<DELIMETER
+
+<tr>
+    <td>{$row['orderID']}</td>
+    <td>{$row['orderAmount']}</td>
+    <td>{$row['orderTransaction']}</td>
+    <td>{$row['orderStatus']}</td>
+    <td>{$row['orderCurrency']}</td>
+    <td><a class="btn btn-danger" href="../../resources/templates/back/delete_order.php?id={$row['orderID']}"><span class="glyphicon glyphicon-remove"></span></a></td>
+</tr>
+
+DELIMETER;
+
+echo $orders;
+}
+}
 
 ?>
