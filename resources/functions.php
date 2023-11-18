@@ -270,4 +270,56 @@ echo $orders;
 }
 }
 
+/************ Admin Products ***********/
+function get_products_in_admin() {
+
+$query = query(" SELECT * FROM products");
+confirm($query); 
+
+while($row = fetch_array($query)) {
+
+$product = <<<DELIMETER
+<tr>
+    <td>{$row['productID']}</td>
+    <td>{$row['productName']}<br>
+    <a href="index.php?edit_product&id={$row['productID']}"><img src="{$row['productImage']}" alt=""></td></a>
+    <td>{$row['categoryID']}</td>
+    <td>{$row['productPrice']}</td>
+    <td>{$row['productQuantityInStock']}</td>
+    <td><a class="btn btn-danger" href="../../resources/templates/back/delete_product.php?id={$row['productID']}"><span class="glyphicon glyphicon-remove"></span></a></td>
+ 
+</tr>
+
+DELIMETER;
+
+echo $product; 
+} 
+}
+
+/***************Admin Add Products ****************/
+function add_product() {
+
+if(isset($_POST['publish'])) {
+
+$productName = escape_string($_POST['productName']);
+$categoryID = escape_string($_POST['categoryID']);
+$productPrice = escape_string($_POST['productPrice']);
+$productQuantityInStock = escape_string($_POST['productQuantityInStock']);
+$productDescription = escape_string($_POST['productDescription']);
+$productImage = escape_string($_FILES['file']['name']);
+$image_temp_location = escape_string($_FILES['file']['tmp_name']);
+
+move_uploaded_file($image_temp_location, UPLOAD_DIR . DS . $productImage);
+
+$query = query("INSERT INTO products(productName, categoryID, productPrice, productQuantityInStock, productDescription, productImage) VALUES
+('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}');");
+
+$last_product_id = last_id();
+confirm($query);
+
+set_message("New product with ID {$last_product_id} was added");
+redirect("index.php?products");
+
+}
+}
 ?>
