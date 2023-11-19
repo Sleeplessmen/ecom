@@ -62,14 +62,12 @@ function confirm($result) {
 function escape_string($string) {
     
     global $connection;
-
     return mysqli_real_escape_string($connection, $string);
 
 }
 
 
 function fetch_array($result) {
-
     return mysqli_fetch_array($result);
 
 }
@@ -270,7 +268,7 @@ echo $orders;
 }
 }
 
-/************ Admin Products ***********/
+/************ Admin View Products Page***********/
 function get_products_in_admin() {
 
 $query = query(" SELECT * FROM products");
@@ -278,12 +276,13 @@ confirm($query);
 
 while($row = fetch_array($query)) {
 
+$categoryID = show_product_category_name($row['categoryID']);
 $product = <<<DELIMETER
 <tr>
     <td>{$row['productID']}</td>
     <td>{$row['productName']}<br>
-    <a href="index.php?edit_product&id={$row['productID']}"><img src="{$row['productImage']}" alt=""></td></a>
-    <td>{$row['categoryID']}</td>
+    <a href="index.php?edit_product&id={$row['productID']}"><img src="../../resources/uploads/{$row['productImage']}"></td></a>
+    <td>{$categoryID}</td>
     <td>{$row['productPrice']}</td>
     <td>{$row['productQuantityInStock']}</td>
     <td><a class="btn btn-danger" href="../../resources/templates/back/delete_product.php?id={$row['productID']}"><span class="glyphicon glyphicon-remove"></span></a></td>
@@ -294,6 +293,16 @@ DELIMETER;
 
 echo $product; 
 } 
+}
+
+function show_product_category_name($categoryID) {
+
+$category_query = query("SELECT * FROM categories where categoryID = '{$categoryID}'");
+confirm($category_query);
+
+while($category_row = fetch_array($category_query)) {
+    return $category_row['categoryName'];
+}
 }
 
 /***************Admin Add Products ****************/
@@ -309,17 +318,47 @@ $productDescription = escape_string($_POST['productDescription']);
 $productImage = escape_string($_FILES['file']['name']);
 $image_temp_location = escape_string($_FILES['file']['tmp_name']);
 
-move_uploaded_file($image_temp_location, UPLOAD_DIR . DS . $productImage);
+move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
 
 $query = query("INSERT INTO products(productName, categoryID, productPrice, productQuantityInStock, productDescription, productImage) VALUES
-('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}');");
+('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}')");
 
 $last_product_id = last_id();
 confirm($query);
 
-set_message("New product with ID {$last_product_id} was added");
+set_message("New product with ID: {$last_product_id} was added");
 redirect("index.php?products");
 
 }
 }
+
+function show_categories_add_product_page() {
+
+$query = query("SELECT * FROM categories");
+confirm($query);
+
+while($row = fetch_array($query)) {
+
+$categories_options = <<<DELIMETER
+
+<option value="{$row['categoryID']}">{$row['categoryName']}</option> 
+
+DELIMETER;  
+
+echo $categories_options;
+
+}
+}
+
+
+
+    
+
+
+
+
+
+
+
+
 ?>

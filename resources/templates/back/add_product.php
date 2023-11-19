@@ -10,7 +10,7 @@
 <form action="" method="post" enctype="multipart/form-data">
 
 <div class="col-md-8">
-
+ 
   <div class="form-group">
       <label for="product-title">Product Name</label>
       <input type="text" name="productName" class="form-control"> 
@@ -42,10 +42,12 @@
 
      <!-- Product Categories-->
     <div class="form-group">
-         <label for="product-title">Product Category</label>
-          <hr>
+        <label for="product-title">Product Category</label>
+
         <select name="categoryID" id="" class="form-control">
             <option value="">Select Category</option> 
+
+            <?php show_categories_add_product_page(); ?>
         </select>
     </div>
 
