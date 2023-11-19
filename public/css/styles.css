@@ -3,3 +3,29 @@
 height: 156px;
 
 }
+
+input {
+    padding: 4px;
+}
+input[type=text] {
+    width: 100%;
+}
+
+input[type=file] {
+    background-color: white;
+    color: #333;
+    padding: 6px 3px 3px 3px;
+}
+
+input[type=file]::-webkit-file-upload-button {
+    display: none;
+    background-color: #333;
+}
+
+.file-upload {
+    background-color: #333333;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+}
+

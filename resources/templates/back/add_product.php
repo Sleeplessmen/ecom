@@ -67,7 +67,7 @@
     <!-- Product Image -->
     <div class="form-group">
         <label for="product-title">Product Image</label>
-        <input type="file" name="file">
+        <input type="file" name="imageToUpload">
     </div>
 
 

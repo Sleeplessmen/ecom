@@ -1,11 +1,11 @@
 <?php
 
 // helper functions
+$upload_directory = "uploads";
 
 function last_id() {
 
 global $connection;
-
 return mysqli_insert_id($connection);
 
 }
@@ -15,13 +15,9 @@ return mysqli_insert_id($connection);
 function set_message($msg) {
 
 if(!empty($msg)) {
-
 $_SESSION['message'] = $msg;
-
 } else {
-
 $msg = "";
-
 }
 
 }
@@ -269,6 +265,13 @@ echo $orders;
 }
 
 /************ Admin View Products Page***********/
+
+function display_image($picture) {
+    global $upload_directory;
+    return $upload_directory . DS . $picture;
+}
+
+
 function get_products_in_admin() {
 
 $query = query(" SELECT * FROM products");
@@ -277,11 +280,14 @@ confirm($query);
 while($row = fetch_array($query)) {
 
 $categoryID = show_product_category_name($row['categoryID']);
+
+$productImage = display_image($row['productImage']);
+
 $product = <<<DELIMETER
 <tr>
     <td>{$row['productID']}</td>
     <td>{$row['productName']}<br>
-    <a href="index.php?edit_product&id={$row['productID']}"><img src="../../resources/uploads/{$row['productImage']}"></td></a>
+    <a href="index.php?edit_product&id={$row['productID']}"><img width='100' src="../../resources/{$productImage}"></td></a>
     <td>{$categoryID}</td>
     <td>{$row['productPrice']}</td>
     <td>{$row['productQuantityInStock']}</td>
@@ -315,10 +321,14 @@ $categoryID = escape_string($_POST['categoryID']);
 $productPrice = escape_string($_POST['productPrice']);
 $productQuantityInStock = escape_string($_POST['productQuantityInStock']);
 $productDescription = escape_string($_POST['productDescription']);
-$productImage = escape_string($_FILES['file']['name']);
-$image_temp_location = escape_string($_FILES['file']['tmp_name']);
+$productImage = escape_string($_FILES['imageToUpload']['name']);
+$image_temp_location = escape_string($_FILES['imageToUpload']['tmp_name']);
 
-move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
+if(isset($_FILES['imageToUp load'])) {
+    move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
+} else {
+    echo "image not found";
+}
 
 $query = query("INSERT INTO products(productName, categoryID, productPrice, productQuantityInStock, productDescription, productImage) VALUES
 ('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}')");
@@ -326,11 +336,17 @@ $query = query("INSERT INTO products(productName, categoryID, productPrice, prod
 $last_product_id = last_id();
 confirm($query);
 
+move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $_FILES['imageToUpload']['name']);
+
 set_message("New product with ID: {$last_product_id} was added");
 redirect("index.php?products");
 
 }
 }
+
+
+
+
 
 function show_categories_add_product_page() {
 
@@ -346,6 +362,38 @@ $categories_options = <<<DELIMETER
 DELIMETER;  
 
 echo $categories_options;
+
+}
+}
+
+/*****************Updating Product*********/
+function update_product() {
+
+if(isset($_POST['update'])) {
+
+$productName = escape_string($_POST['productName']);
+$categoryID = escape_string($_POST['categoryID']);
+$productPrice = escape_string($_POST['productPrice']);
+$productQuantityInStock = escape_string($_POST['productQuantityInStock']);
+$productDescription = escape_string($_POST['productDescription']);
+$productImage = escape_string($_FILES['imageToUpload']['name']);
+$image_temp_location = escape_string($_FILES['imageToUpload']['tmp_name']);
+
+move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage  );
+
+$query = "UPDATE products SET ";
+$query .= "productName = '{$productName}', ";
+$query .= "categoryID = '{$categoryID}', ";
+$query .= "productPrice = '{$productPrice}', ";
+$query .= "productQuantityInStock = '{$productQuantityInStock}', ";
+$query .= "productDescription = '{$productDescription}', ";
+$query .= "productImage = '{$productImage}' ";
+$query .= "WHERE productID = " . escape_string($_GET['id']);
+
+confirm($query);
+
+set_message("Product has been updated");
+redirect("index.php?products");
 
 }
 }
