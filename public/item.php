@@ -23,7 +23,7 @@ while($row = fetch_array($query)):
 
     <div class="col-md-7">
         <div style="max-width: 100%; height: auto;">
-            <img class="img-responsive" src="<?php echo $row['productImage']; ?>" alt="" style="width: 100%; height: auto;">
+            <img class="img-responsive" src="../resources/<?php echo display_image($row['productImage'])?>" alt="" style="width: 100%; height: auto;">
         </div>
     </div>
 

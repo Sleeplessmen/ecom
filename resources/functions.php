@@ -81,11 +81,13 @@ confirm($query);
 
 while($row = fetch_array($query)) {
 
+$productImage = display_image($row['productImage']);
+
 $product = <<<DELIMETER
 
 <div class="col-sm-4 col-lg-4 col-md-4">
     <div class="thumbnail">
-        <a href="item.php?id={$row['productID']}"><img src="{$row['productImage']}" alt=""></a> 
+        <a href="item.php?id={$row['productID']}"><img src="../resources/{$productImage}" alt=""></a> 
         <div class="caption">
             <h4 class="pull-right">&#36;{$row['productPrice']}</h4>
             <h4><a href="item.php?id={$row['productID']}">{$row['productName']}</a>
@@ -132,16 +134,18 @@ confirm($query);
 
 while($row = fetch_array($query)) {
 
+$productImage = display_image($row['productImage']);
+
 $product = <<<DELIMETER
 
 <div class="col-md-3 col-sm-6 hero-feature">
 <div class="thumbnail">
-    <img src="{$row['productImage']}" alt="">
+    <img src="../resources/{$productImage}" alt="">
     <div class="caption">
         <h3>{$row['productName']}</h3>
-        <p>{$row['productShortDesc']}</p>
+        <p>{$row['productDescription']}</p>
         <p>
-            <a href="#" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['productID']}" class="btn btn-default">More Info</a>
+            <a href="../resources/cart.php?add={$row['productID']}" class="btn btn-primary">Add To Cart</a> <a href="item.php?id={$row['productID']}" class="btn btn-default">More Info</a>
         </p>
     </div>
 </div>
@@ -163,16 +167,18 @@ confirm($query);
 
 while($row = fetch_array($query)) {
 
+$productImage = display_image($row['productImage']);
+
 $product = <<<DELIMETER
 
 <div class="col-md-3 col-sm-6 hero-feature">
 <div class="thumbnail">
-    <img src="{$row['productImage']}" alt="">
+    <img src="../resources/{$productImage}" alt="">
     <div class="caption">
         <h3>{$row['productName']}</h3>
-        <p>{$row['productShortDesc']}</p>
+        <p>{$row['productDescription']}</p>
         <p>
-            <a href="#" class="btn btn-primary">Buy Now!</a> <a href="item.php?id={$row['productID']}" class="btn btn-default">More Info</a>
+            <a href="../resources/cart.php?add={$row['productID']}" class="btn btn-primary">Add To Cart</a> <a href="item.php?id={$row['productID']}" class="btn btn-default">More Info</a>
         </p>
     </div>
 </div>
@@ -324,19 +330,13 @@ $productDescription = escape_string($_POST['productDescription']);
 $productImage = escape_string($_FILES['imageToUpload']['name']);
 $image_temp_location = escape_string($_FILES['imageToUpload']['tmp_name']);
 
-if(isset($_FILES['imageToUp load'])) {
-    move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
-} else {
-    echo "image not found";
-}
+move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
 
 $query = query("INSERT INTO products(productName, categoryID, productPrice, productQuantityInStock, productDescription, productImage) VALUES
 ('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}')");
 
 $last_product_id = last_id();
 confirm($query);
-
-move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $_FILES['imageToUpload']['name']);
 
 set_message("New product with ID: {$last_product_id} was added");
 redirect("index.php?products");
@@ -379,6 +379,16 @@ $productDescription = escape_string($_POST['productDescription']);
 $productImage = escape_string($_FILES['imageToUpload']['name']);
 $image_temp_location = escape_string($_FILES['imageToUpload']['tmp_name']);
 
+if(empty($productImage)) {
+
+$get_pic = query("SELECT productImage FROM products WHERE productID = " . escape_string($_GET['id']));
+confirm($get_pic);
+
+while($pic = fetch_array($get_pic)) {
+$productImage = $pic['productImage'];
+}
+}
+
 move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage  );
 
 $query = "UPDATE products SET ";
@@ -390,7 +400,8 @@ $query .= "productDescription = '{$productDescription}', ";
 $query .= "productImage = '{$productImage}' ";
 $query .= "WHERE productID = " . escape_string($_GET['id']);
 
-confirm($query);
+$send_update_query = query($query);
+confirm($send_update_query);
 
 set_message("Product has been updated");
 redirect("index.php?products");

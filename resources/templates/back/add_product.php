@@ -25,7 +25,7 @@
   <div class="form-group row">
     <div class="col-xs-3">
         <label for="product-price">Product Price</label>
-        <input type="number" name="productPrice" class="form-control" size="60">
+        <input type="number" step="any" min="0" name="productPrice" class="form-control" size="60">
     </div>
   </div>
 

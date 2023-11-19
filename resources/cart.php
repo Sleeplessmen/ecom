@@ -70,9 +70,13 @@ while($row = fetch_array($query)) {
 $subtotal = $row['productPrice'] * $value;
 $item_quantity += $value;
 
+$productImage = display_image($row['productImage']);
+
 $product = <<<DELIMETER
 <tr>
-    <td>{$row['productName']}</td>
+    <td>{$row['productName']}<br>
+    <img width='100' src="../resources/{$productImage}">
+    </td>
     <td>&#36;{$row['productPrice']}</td>  
     <td>{$value}</td>
     <td>&#36;{$subtotal}</td>
@@ -96,10 +100,9 @@ $item_name++;
 $item_number++;
 $amount++;
 $quantity++;
-} 
-
 $_SESSION['item_total'] = $total += $subtotal;
 $_SESSION['item_quantity'] = $item_quantity;
+} 
 }   
 }
 }
@@ -122,7 +125,6 @@ return $paypal_button;
 
 }
 }
-
 
 
 

@@ -23,7 +23,7 @@ $productPrice = escape_string($row['productPrice']);
 $productQuantityInStock = escape_string($row['productQuantityInStock']);
 $productDescription = escape_string($row['productDescription']);
 $productImage = escape_string($row['productImage']);
-
+ 
 }
 }
 
@@ -45,7 +45,7 @@ update_product();
   <div class="form-group row">
     <div class="col-xs-3">
         <label for="product-price">Product Price</label>
-        <input type="number" name="productPrice" class="form-control" size="60" value="<?php echo $productPrice ?>">
+        <input type="number" step="any" min="0" name="productPrice" class="form-control" size="60" value="<?php echo $productPrice ?>">
     </div>
   </div>
 
@@ -64,7 +64,7 @@ update_product();
         <label for="product-title">Product Category</label>
 
         <select name="categoryID" id="" class="form-control">
-            <option value="">Select Category</option> 
+            <option value=""><?php echo show_product_category_name($categoryID); ?></option> 
             <?php show_categories_add_product_page(); ?>
         </select>
     </div>
@@ -80,7 +80,7 @@ update_product();
     <div class="form-group">
         <label for="product-title">Product Image</label>
         <input type="file" name="imageToUpload"> <br>
-        <img src="<?php echo $productImage; ?>
+        <img width='200' src="../../resources/<?php echo $productImage; ?>
     </div>
 
 
