@@ -330,7 +330,11 @@ $productDescription = escape_string($_POST['productDescription']);
 $productImage = escape_string($_FILES['imageToUpload']['name']);
 $image_temp_location = escape_string($_FILES['imageToUpload']['tmp_name']);
 
-move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage);
+if (move_uploaded_file($image_temp_location, UPLOAD_DIRECTORY . DS . $productImage)) {
+    echo 'File was uploaded successfully.';
+} else {
+    echo 'File upload failed.';
+}
 
 $query = query("INSERT INTO products(productName, categoryID, productPrice, productQuantityInStock, productDescription, productImage) VALUES
 ('{$productName}', '{$categoryID}', '{$productPrice}', '{$productQuantityInStock}', '{$productDescription}', '{$productImage}')");
@@ -407,6 +411,49 @@ set_message("Product has been updated");
 redirect("index.php?products");
 
 }
+}
+
+/**************Categories in admin *******************/
+function show_categories_in_admin() {
+
+$category_query = query("SELECT * FROM categories");
+confirm($category_query);
+
+while($row = fetch_array($category_query)) {
+
+$categoryID = $row['categoryID'];
+$categoryName = $row['categoryName'];
+
+$category = <<<DELIMETER
+
+<tr>
+    <td>{$categoryID}</td>
+    <td>{$categoryName}</td>
+</tr>
+
+DELIMETER;
+
+echo $category;
+
+}
+}
+
+
+function add_category() {
+
+if(isset($_POST['add_category'])) {
+
+$categoryName = escape_string($_POST['categoryName']);
+
+$insert_category = query("INSERT INTO categories(categoryName) VALUES('{$categoryName}')");
+confirm($insert_category);
+
+redirect("index.php?categories");
+}
+
+
+
+
 }
 
 
